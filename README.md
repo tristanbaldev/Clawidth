@@ -1,5 +1,11 @@
 # Payband
 
+[![CI](https://github.com/tristanbaldev/Payband/actions/workflows/ci.yml/badge.svg)](https://github.com/tristanbaldev/Payband/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-ESP32--C3-informational)
+![Firmware](https://img.shields.io/badge/firmware-MicroPython-2b6cb0)
+![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+
 **A discreet little money-ticker for your wrist.** Set your hourly rate, clock
 in, and watch your earnings climb in real time — worn palm-side so it's for you,
 not a billboard for the room.
@@ -10,6 +16,8 @@ device's own wifi; after that it counts entirely on its own.
 
 > Status: **v1 — bench prototype.** Firmware is complete and runnable; the
 > wearable enclosure is in progress. See the [roadmap](#roadmap).
+>
+> This is a fully open-source hardware project — build it, fork it, remix it.
 
 ---
 
@@ -89,6 +97,22 @@ MicroPython or vendored here, so there's nothing to `pip install` onto the board
 
 ---
 
+## Contributing
+
+Payband is open source and contributions are very welcome — code, docs, testing
+on a board variant I haven't tried, or sharing an enclosure design.
+
+- 🐛 Found a bug or a board quirk? [Open an issue](https://github.com/tristanbaldev/Payband/issues).
+- 💡 Got an idea (overtime rules, a different screen, a slicker UI)? Start a
+  [discussion](https://github.com/tristanbaldev/Payband/discussions) or open a feature request.
+- 🔧 Want to build on it? See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup and conventions.
+
+Please keep the firmware **dependency-free and MicroPython-compatible**, and put
+new tunables in `src/config.py`. CI runs a syntax check on every push. By
+participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+MIT — see [`LICENSE`](LICENSE). Use it, fork it, build your own, sell your own. ❤️

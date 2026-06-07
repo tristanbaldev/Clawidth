@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  syntax:
+    name: Firmware syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Validate MicroPython sources parse
+        run: python -c "import ast,glob; files=sorted(glob.glob('src/*.py')); [ast.parse(open(f,encoding='utf-8').read(),filename=f) for f in files]; print(len(files),'modules parsed cleanly')"
