@@ -5,8 +5,20 @@ All notable changes to Payband are documented here. The format loosely follows
 
 ## [Unreleased]
 
-- v1.5 groundwork: DS3231 RTC for scheduled auto clock-in; gate the wifi AP
-  behind the long-press to save battery.
+### Added
+- **Claude usage mode** — an optional second display mode that shows your Claude
+  token burn (tokens this 5-hour window, time left, burn rate) at a glance.
+  - `bridge/payband_bridge.py`: a stdlib-only PC service that reads your local
+    Claude Code logs and serves the usage as a tiny JSON feed on your LAN. Nothing
+    personal is hardcoded; it auto-discovers whatever logs exist and holds no API key.
+  - `src/usage.py`: the watch-side client (joins wifi, polls the bridge).
+  - Display mode toggle (Earnings / Claude) on the phone config page, persisted in state.
+  - `docs/USAGE_WATCH.md`: architecture, the disguised "spy watch" roadmap, and honest caveats.
+  - New (blank-by-default) config in `src/config.py`: `WIFI_SSID`, `WIFI_PASSWORD`, `BRIDGE_URL`.
+
+### Notes
+- The official Claude.ai 5-hour/weekly limit % has no public API; the window % is a
+  local estimate from your own logs and is labelled as such.
 
 ## [0.1.0] — 2026-06-06
 

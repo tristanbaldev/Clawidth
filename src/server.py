@@ -2,16 +2,18 @@
 Payband - SoftAP + tiny HTTP config server.
 
 Your phone joins the "Payband" wifi network, opens http://192.168.4.1, and gets
-a one-page control panel: set the hourly rate, clock in/out, watch the live
-total. No internet, no app, no cloud.
+a one-page control panel: set the hourly rate, clock in/out, switch the display
+mode. No internet, no app, no cloud.
 
 Routes (all GET, kept dead-simple for the on-page fetch() calls):
-  /            -> the control panel (HTML)
-  /state       -> current state as JSON (the page polls this every second)
-  /set?rate=NN -> set hourly rate
-  /in          -> clock in
-  /out         -> clock out
-  /reset       -> zero the running total
+  /                  -> the control panel (HTML)
+  /state             -> current state as JSON (the page polls this every second)
+  /set?rate=NN       -> set hourly rate
+  /in                -> clock in
+  /out               -> clock out
+  /reset             -> zero the running total
+  /mode?to=earnings  -> switch the watch display to the earnings ticker
+  /mode?to=usage     -> switch the watch display to the Claude-usage readout
 """
 
 try:
@@ -79,6 +81,11 @@ button:active{transform:translateY(1px)}
 <div class="row">
  <button onclick="if(confirm('Reset total to $0?'))api('/reset')">RESET</button>
 </div>
+<label>DISPLAY MODE</label>
+<div class="row">
+ <button id="mEarn" onclick="setMode('earnings')">EARNINGS</button>
+ <button id="mClaude" onclick="setMode('usage')">CLAUDE</button>
+</div>
 <div class="muted">CONNECTED TO PAYBAND</div>
 </div><script>
 let editing=false;
@@ -92,11 +99,14 @@ async function refresh(){
   document.getElementById('st').textContent=
    (s.running?'ON':'OFF')+'  ·  '+s.hms+'  ·  $'+s.rate.toFixed(2)+'/hr';
   document.getElementById('sub').className='sub'+(s.running?' on':'');
+  document.getElementById('mEarn').classList.toggle('go',s.mode==='earnings');
+  document.getElementById('mClaude').classList.toggle('go',s.mode==='usage');
   if(!editing&&document.activeElement!==r)r.value=s.rate.toFixed(2);
  }catch(e){}
 }
 async function api(p){await fetch(p);refresh()}
 async function setRate(){await fetch('/set?rate='+encodeURIComponent(r.value));refresh()}
+async function setMode(m){await fetch('/mode?to='+m);refresh()}
 refresh();setInterval(refresh,1000);
 </script></body></html>"""
 
@@ -149,6 +159,8 @@ def _make_handler(state):
                     state.clock_out()
                 elif path == "/reset":
                     state.reset()
+                elif path == "/mode" and "to" in q:
+                    state.set_mode(q["to"])
                 body = json.dumps(
                     {
                         "rate": state.rate,
@@ -156,6 +168,7 @@ def _make_handler(state):
                         "earnings": state.earnings(),
                         "seconds": state.worked_s(),
                         "hms": _hms(state.worked_s()),
+                        "mode": state.mode,
                     }
                 )
                 ctype = "application/json"

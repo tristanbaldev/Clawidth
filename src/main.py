@@ -1,8 +1,9 @@
 """
 Payband - entry point.
 
-Wires the OLED, the button, the persistent state, and the wifi config server
-together and runs them concurrently with asyncio. This file auto-runs on boot.
+Wires the OLED, the button, the persistent state, the optional Claude-usage
+client, and the wifi config server together and runs them concurrently with
+asyncio. This file auto-runs on boot.
 """
 
 try:
@@ -14,14 +15,15 @@ import config
 from state import Payband
 from display import Display
 from button import watch_button
+from usage import Usage, usage_loop
 import server
 
 
-async def display_loop(disp, state):
+async def display_loop(disp, state, usage):
     delay = max(1, 1000 // config.REFRESH_HZ)
     while True:
         try:
-            disp.render(state)
+            disp.render(state, usage)
         except Exception:
             pass
         await asyncio.sleep_ms(delay)
@@ -30,6 +32,7 @@ async def display_loop(disp, state):
 async def main():
     state = Payband.load()
     disp = Display()
+    usage = Usage()
 
     def on_short():
         state.toggle()          # tap = clock in / clock out
@@ -37,8 +40,9 @@ async def main():
     def on_long():
         disp.flash_config()     # hold = show wifi card
 
-    asyncio.create_task(display_loop(disp, state))
+    asyncio.create_task(display_loop(disp, state, usage))
     asyncio.create_task(watch_button(on_short, on_long))
+    asyncio.create_task(usage_loop(usage))   # no-op unless wifi + bridge configured
     await server.serve(state)
 
     while True:                 # keep the event loop alive

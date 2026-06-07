@@ -1,8 +1,9 @@
 """
 Payband - OLED rendering.
 
-Two screens:
-  * the money ticker (default)
+Three screens:
+  * the money ticker (earnings mode, default)
+  * the Claude-usage readout (usage mode, optional)
   * a wifi "config card" (shown for a few seconds after a long-press)
 
 Big digits are drawn by upscaling MicroPython's built-in 8x8 font, so we need
@@ -48,6 +49,10 @@ class Display:
                         )
             x += 8 * scale
 
+    def _big_centred(self, s, y, scale):
+        w = len(s) * 8 * scale
+        self._big(s, max(0, (config.OLED_WIDTH - w) // 2), y, scale)
+
     @staticmethod
     def _hms(total_s):
         total_s = int(total_s)
@@ -56,13 +61,27 @@ class Display:
         s = total_s % 60
         return "%dh %02dm" % (h, m) if h else "%dm %02ds" % (m, s)
 
+    @staticmethod
+    def _fmt_tokens(n):
+        try:
+            n = int(n)
+        except (TypeError, ValueError):
+            return "0"
+        if n >= 1_000_000:
+            return "%.1fM" % (n / 1_000_000)
+        if n >= 1_000:
+            return "%dk" % (n // 1_000)
+        return str(n)
+
     # ---------- public ----------
     def flash_config(self):
         self._config_until = time.ticks_add(time.ticks_ms(), config.CONFIG_CARD_MS)
 
-    def render(self, state):
+    def render(self, state, usage=None):
         if time.ticks_diff(self._config_until, time.ticks_ms()) > 0:
             self._render_config()
+        elif getattr(state, "mode", "earnings") == "usage":
+            self._render_usage(usage)
         else:
             self._render_main(state)
         self.oled.show()
@@ -83,12 +102,43 @@ class Display:
             amount = 9999.99
         money = "%s%.2f" % (config.CURRENCY, amount)
         scale = 3 if len(money) <= 5 else 2
-        w = len(money) * 8 * scale
-        x = max(0, (config.OLED_WIDTH - w) // 2)
-        self._big(money, x, 24, scale)
+        self._big_centred(money, 24, scale)
 
         # bottom row: elapsed time worked
         o.text(self._hms(state.worked_s()), 0, config.OLED_HEIGHT - 8, 1)
+
+    def _render_usage(self, usage):
+        o = self.oled
+        o.fill(0)
+
+        if usage is None or not usage.enabled():
+            o.text("CLAUDE USAGE", 16, 0, 1)
+            o.text("set WIFI_SSID", 0, 26, 1)
+            o.text("+ BRIDGE_URL", 0, 38, 1)
+            o.text("in config.py", 0, 50, 1)
+            return
+
+        # top row: label + link status
+        o.text("CLAUDE", 0, 0, 1)
+        st = usage.status
+        o.text(st, config.OLED_WIDTH - 8 * len(st), 0, 1)
+
+        # headline: window % if a budget is configured, else window tokens
+        if usage.window_pct is not None:
+            head = "%d%%" % usage.window_pct
+        else:
+            head = self._fmt_tokens(usage.tokens_window)
+        scale = 3 if len(head) <= 5 else 2
+        self._big_centred(head, 22, scale)
+
+        # bottom row: time left in window + burn rate (fall back to today's total)
+        parts = []
+        if usage.window_min_left is not None:
+            parts.append("%dm left" % usage.window_min_left)
+        if usage.burn_tpm is not None:
+            parts.append("%s/m" % self._fmt_tokens(usage.burn_tpm))
+        sub = "  ".join(parts) if parts else (self._fmt_tokens(usage.tokens_today) + " today")
+        o.text(sub[:16], 0, config.OLED_HEIGHT - 8, 1)
 
     def _render_config(self):
         o = self.oled

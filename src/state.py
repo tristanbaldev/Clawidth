@@ -13,6 +13,7 @@ you tapped "clock in", and earnings are just:
 
   - accumulated_s : time banked from previous (clocked-out) sessions
   - session_start : a monotonic tick marker for the current running session
+  - mode          : which screen the watch shows ("earnings" or "usage")
 
 v1 limitation: there is no real-time clock, so if the board fully loses power
 mid-shift, the in-flight session time is lost (your rate and banked time still
@@ -28,16 +29,19 @@ try:
 except ImportError:
     STATE_FILE = "state.json"
 
+MODES = ("earnings", "usage")
+
 
 def _now_ms():
     return time.ticks_ms()
 
 
 class Payband:
-    def __init__(self, rate=15.0, accumulated_s=0.0, running=False):
+    def __init__(self, rate=15.0, accumulated_s=0.0, running=False, mode="earnings"):
         self.rate = float(rate)
         self.accumulated_s = float(accumulated_s)
         self.running = bool(running)
+        self.mode = mode if mode in MODES else "earnings"
         # session_start is RAM-only; re-based on boot or on clock-in.
         self.session_start = _now_ms() if self.running else None
 
@@ -51,6 +55,7 @@ class Payband:
                 rate=d.get("rate", 15.0),
                 accumulated_s=d.get("accumulated_s", 0.0),
                 running=d.get("running", False),
+                mode=d.get("mode", "earnings"),
             )
         except (OSError, ValueError):
             return cls()
@@ -63,6 +68,7 @@ class Payband:
                         "rate": self.rate,
                         "accumulated_s": self.accumulated_s,
                         "running": self.running,
+                        "mode": self.mode,
                     },
                     f,
                 )
@@ -105,6 +111,11 @@ class Payband:
             return
         self.rate = r if r >= 0 else 0.0
         self.save()
+
+    def set_mode(self, mode):
+        if mode in MODES:
+            self.mode = mode
+            self.save()
 
     def reset(self):
         self.accumulated_s = 0.0

@@ -32,3 +32,14 @@ CURRENCY = "$"
 
 # --- Persistence ---
 STATE_FILE = "state.json"
+
+# --- Claude usage mode (OPTIONAL) ---
+# Leave WIFI_SSID empty to disable usage mode entirely. To turn it on, each
+# builder fills in THEIR OWN 2.4GHz network and the address of THEIR OWN
+# payband-bridge (see the /bridge folder). Nothing here ships with a real value,
+# and the watch never holds an API key - only your bridge does.
+WIFI_SSID = ""              # your 2.4 GHz network name (ESP32-C3 is 2.4 GHz only)
+WIFI_PASSWORD = ""          # your network password
+BRIDGE_URL = ""             # e.g. "http://192.168.1.50:8088/usage"  (plain http, LAN)
+USAGE_POLL_S = 30           # how often the watch refreshes usage
+USAGE_STALE_S = 180         # a reading older than this is shown as STALE
