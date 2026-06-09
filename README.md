@@ -47,7 +47,8 @@ device's own wifi; after that it counts entirely on its own.
 **~$35 total.** Why ESP32-C3 and not a Raspberry Pi? A Pi is bigger than a watch,
 boots Linux for 30 s, and drains a wrist-sized cell in about an hour. A
 microcontroller is instant-on, sips power, and is far smaller — exactly what a
-wearable wants.
+wearable wants. (For the *wall* display it's the opposite — there a Pi is the right
+tool. See [`wall/`](wall/).)
 
 Full pinout and safety notes: [`docs/WIRING.md`](docs/WIRING.md).
 
@@ -90,6 +91,9 @@ The 5-hour-window **%** is a **local estimate** (Anthropic exposes no API for th
 official figure). Full architecture, the disguised "spy watch" roadmap, and the honest
 caveats live in [`docs/USAGE_WATCH.md`](docs/USAGE_WATCH.md).
 
+**Prefer it on the wall?** The same bridge feeds a fullscreen dashboard for a
+wall-mounted panel (e.g. a 15.6" IPS screen on a Raspberry Pi) — see [`wall/`](wall/).
+
 ---
 
 ## Project layout
@@ -106,6 +110,8 @@ src/
   ssd1306.py    vendored MicroPython OLED driver (MIT)
 bridge/
   payband_bridge.py   PC service: serves your local Claude usage as JSON (stdlib only)
+wall/
+  index.html          fullscreen Claude-usage dashboard for a wall-mounted panel
 docs/
   WIRING.md       pinout, diagram, charging, LiPo safety
   FLASHING.md     install MicroPython + upload the files
@@ -119,7 +125,8 @@ MicroPython or vendored here, so there's nothing to `pip install` onto the board
 
 ## Roadmap
 
-- **v1 — now:** earnings ticker + an optional Claude-usage mode on the current OLED.
+- **v1 — now:** earnings ticker + an optional Claude-usage mode on the current OLED,
+  plus a fullscreen wall dashboard.
 - **v1.5:** a **DS3231 real-time clock** (scheduled auto clock-in + a real time face),
   a **Sharp Memory LCD** for an always-on matte dial, and a covert capacitive-touch
   reveal — the start of the disguised "spy watch."

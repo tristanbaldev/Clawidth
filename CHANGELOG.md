@@ -15,6 +15,9 @@ All notable changes to Payband are documented here. The format loosely follows
   - Display mode toggle (Earnings / Claude) on the phone config page, persisted in state.
   - `docs/USAGE_WATCH.md`: architecture, the disguised "spy watch" roadmap, and honest caveats.
   - New (blank-by-default) config in `src/config.py`: `WIFI_SSID`, `WIFI_PASSWORD`, `BRIDGE_URL`.
+- **Wall display** (`wall/index.html`) — a fullscreen Claude-usage dashboard for a
+  wall-mounted panel (e.g. a 15.6" IPS screen driven by a Raspberry Pi in kiosk mode).
+  Reuses the same bridge; `wall/README.md` covers the driver-board + Pi kiosk setup.
 
 ### Notes
 - The official Claude.ai 5-hour/weekly limit % has no public API; the window % is a

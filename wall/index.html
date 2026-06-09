@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payband · Claude Usage Wall</title>
+<style>
+  /*
+   * Payband wall dashboard - a fullscreen Claude-usage HUD for a wall-mounted
+   * panel (e.g. a 15.6" IPS screen driven by a Raspberry Pi in kiosk mode).
+   * It is just a web page: it polls your payband-bridge for the usage JSON.
+   * Nothing personal is baked in - pass your bridge address with ?bridge=...
+   *   index.html?bridge=http://192.168.1.50:8088/usage
+   */
+  :root{
+    --bg:#06080c; --ink:#eef1f5; --dim:#7b8290; --line:#1c2128;
+    --ok:#cfd6df; --warn:#d9b25a; --bad:#d96a5a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background-color:var(--bg); color:var(--ink); overflow:hidden;
+    font-family:"SF Mono",ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;
+    /* HELMTEK-style fine 20px + coarse 80px schematic grid */
+    background-image:
+      linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px),
+      linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:20px 20px,20px 20px,80px 80px,80px 80px;
+  }
+  .frame{height:100%;display:flex;flex-direction:column;padding:4vh 4vw;gap:2.4vh}
+  header,footer{display:flex;align-items:center;justify-content:space-between}
+  .brand{font-size:1.7vw;letter-spacing:.5em;color:var(--dim);font-weight:600}
+  .status{display:flex;align-items:center;gap:.8vw;font-size:1.1vw;letter-spacing:.25em;color:var(--dim)}
+  .dot{width:.9vw;height:.9vw;border-radius:50%;background:var(--bad);
+       box-shadow:0 0 1.2vw currentColor;color:var(--bad)}
+  .dot.ok{background:var(--ok);color:var(--ok)}
+  .dot.warn{background:var(--warn);color:var(--warn)}
+  main{flex:1;display:grid;grid-template-columns:1.25fr 1fr;align-items:center;gap:4vw}
+  .label{font-size:1.2vw;letter-spacing:.35em;color:var(--dim);margin-bottom:.4vh}
+  .hero{font-size:13vw;line-height:.9;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .hero .unit{font-size:5vw;color:var(--dim);margin-left:.4vw}
+  .today{margin-top:3vh;font-size:2.2vw;color:var(--ink);font-variant-numeric:tabular-nums}
+  .today .label{display:inline;margin-right:1vw}
+  /* window ring */
+  .ring{position:relative;justify-self:center;width:32vw;height:32vw;max-width:46vh;max-height:46vh}
+  .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring .track{fill:none;stroke:var(--line);stroke-width:10}
+  .ring .prog{fill:none;stroke:var(--ink);stroke-width:10;stroke-linecap:round;
+    transition:stroke-dashoffset .6s ease}
+  .ring .center{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center}
+  .ring .big{font-size:6vw;font-weight:700;font-variant-numeric:tabular-nums}
+  .ring .small{font-size:1.1vw;letter-spacing:.3em;color:var(--dim);margin-top:1vh}
+  footer{border-top:1px solid var(--line);padding-top:2.4vh;gap:3vw}
+  .tile{flex:1}
+  .tile .v{font-size:2.6vw;font-weight:600;font-variant-numeric:tabular-nums}
+  .tile .k{font-size:1vw;letter-spacing:.3em;color:var(--dim);margin-top:.6vh}
+  .tile .v.muted{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="frame">
+  <header>
+    <div class="brand">PAYBAND · CLAUDE USAGE</div>
+    <div class="status"><span id="dot" class="dot"></span><span id="stxt">CONNECTING</span><span id="clock"></span></div>
+  </header>
+
+  <main>
+    <div>
+      <div class="label">TOKENS · THIS 5H WINDOW</div>
+      <div class="hero"><span id="winTok">—</span></div>
+      <div class="today"><span class="label">TODAY</span><span id="todayTok">—</span></div>
+    </div>
+
+    <div class="ring">
+      <svg viewBox="0 0 220 220">
+        <circle class="track" cx="110" cy="110" r="100"></circle>
+        <circle id="prog" class="prog" cx="110" cy="110" r="100"
+                stroke-dasharray="628.3" stroke-dashoffset="628.3"></circle>
+      </svg>
+      <div class="center">
+        <div id="ringBig" class="big">—</div>
+        <div id="ringSmall" class="small">WINDOW</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="tile"><div id="burn" class="v">—</div><div class="k">BURN · TOK/MIN</div></div>
+    <div class="tile"><div id="out" class="v">—</div><div class="k">OUTPUT · TODAY</div></div>
+    <div class="tile"><div id="cost" class="v muted">—</div><div class="k">COST · TODAY</div></div>
+    <div class="tile"><div id="model" class="v">—</div><div class="k">ACTIVE MODEL</div></div>
+  </footer>
+</div>
+
+<script>
+  const BRIDGE = new URLSearchParams(location.search).get("bridge")
+              || "http://localhost:8088/usage";
+  const REFRESH_MS = 5000;
+  const WINDOW_MIN = 300;            // 5-hour window
+  const CIRC = 2 * Math.PI * 100;    // ring circumference
+
+  const $ = (id) => document.getElementById(id);
+
+  function fmtTokens(n){
+    n = Number(n) || 0;
+    if (n >= 1e9) return (n/1e9).toFixed(2).replace(/\.?0+$/,"") + "B";
+    if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,"") + "M";
+    if (n >= 1e3) return Math.round(n/1e3) + "k";
+    return String(n);
+  }
+  function heroParts(n){
+    const s = fmtTokens(n);
+    const m = s.match(/^([\d.]+)([A-Za-z]*)$/);
+    return m ? [m[1], m[2]] : [s, ""];
+  }
+  function fmtMinLeft(min){
+    min = Math.max(0, Math.round(min));
+    const h = Math.floor(min/60), m = min%60;
+    return h ? h + "h " + String(m).padStart(2,"0") + "m" : m + "m";
+  }
+  function shortModel(s){
+    return (s||"").replace(/^claude-/,"").replace(/-(\d{8})$/,"").toUpperCase();
+  }
+
+  function setStatus(kind, text){
+    const dot = $("dot");
+    dot.className = "dot" + (kind === "ok" ? " ok" : kind === "warn" ? " warn" : "");
+    $("stxt").textContent = text;
+  }
+  function setRing(frac, big, small){
+    frac = Math.max(0, Math.min(1, frac || 0));
+    $("prog").setAttribute("stroke-dashoffset", String(CIRC * (1 - frac)));
+    $("ringBig").textContent = big;
+    $("ringSmall").textContent = small;
+  }
+
+  function render(d){
+    const [hv, hu] = heroParts(d.tokens_window);
+    $("winTok").innerHTML = hv + (hu ? '<span class="unit">'+hu+'</span>' : '');
+    $("todayTok").textContent = fmtTokens(d.tokens_today);
+    $("burn").textContent = (d.burn_tpm != null) ? fmtTokens(d.burn_tpm) : "—";
+    $("out").textContent = fmtTokens(d.out_tokens_today);
+    $("model").textContent = shortModel(d.model) || "—";
+
+    if (d.cost_today_cents != null){
+      $("cost").textContent = "$" + (d.cost_today_cents/100).toFixed(2);
+      $("cost").classList.remove("muted");
+    }
+
+    if (d.window_pct != null){
+      setRing(d.window_pct/100, d.window_pct + "%", "OF WINDOW");
+    } else if (d.window_min_left != null){
+      setRing(1 - d.window_min_left/WINDOW_MIN, fmtMinLeft(d.window_min_left), "LEFT IN 5H WINDOW");
+    } else {
+      setRing(0, "—", "WINDOW");
+    }
+  }
+
+  let lastGood = 0;
+  async function tick(){
+    try{
+      const r = await fetch(BRIDGE, {cache:"no-store"});
+      const d = await r.json();
+      render(d);
+      lastGood = Date.now();
+      setStatus("ok", "LIVE");
+    }catch(e){
+      const ageS = lastGood ? Math.round((Date.now()-lastGood)/1000) : null;
+      if (lastGood && ageS < 180) setStatus("warn", "STALE " + ageS + "s");
+      else setStatus("bad", "NO LINK");
+    }
+  }
+
+  function clock(){
+    const t = new Date();
+    $("clock").textContent = " · " + String(t.getHours()).padStart(2,"0")
+                           + ":" + String(t.getMinutes()).padStart(2,"0");
+  }
+
+  clock(); setInterval(clock, 10000);
+  tick();  setInterval(tick, REFRESH_MS);
+</script>
+</body>
+</html>
