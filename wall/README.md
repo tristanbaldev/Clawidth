@@ -1,7 +1,7 @@
-# Payband wall display
+# Clawidth wall display
 
 A fullscreen **Claude usage HUD** for a wall-mounted panel. It's just a web page
-([`index.html`](index.html)) that polls your [`payband-bridge`](../bridge/) for the
+([`index.html`](index.html)) that polls your [`clawidth-bridge`](../bridge/) for the
 usage JSON — so it reuses the exact same data source as the watch. Big glanceable
 numbers, a 5-hour-window ring, burn rate, today's totals, in a dark HELMTEK-style
 schematic look.
@@ -16,7 +16,7 @@ On the computer where you use Claude Code:
 
 ```bash
 # 1. start the bridge (serves your usage JSON on :8088)
-python bridge/payband_bridge.py
+python bridge/clawidth_bridge.py
 
 # 2. open the dashboard in any browser, pointed at the bridge
 #    wall/index.html?bridge=http://localhost:8088/usage
@@ -34,7 +34,7 @@ the whole thing, working, in a browser — before any panel arrives.
                                        │ USB-C / 12V power      │ Chromium --kiosk
                                        └────────────────        │  fetches the bridge
                                                                  │  over your wifi
-                 payband-bridge (your PC) ──/usage JSON──────────┘
+                 clawidth-bridge (your PC) ──/usage JSON──────────┘
 ```
 
 ### 1. The driver board (the part you must match to YOUR panel)
@@ -63,7 +63,7 @@ smoother. Flash **Raspberry Pi OS (with desktop)**, connect it to wifi, then:
 
 ```bash
 sudo apt update && sudo apt install -y chromium-browser unclutter
-mkdir -p ~/payband && cp index.html ~/payband/    # copy this dashboard onto the Pi
+mkdir -p ~/clawidth && cp index.html ~/clawidth/    # copy this dashboard onto the Pi
 ```
 
 Auto-start the kiosk on boot — add to `~/.config/lxsession/LXDE-pi/autostart`
@@ -75,14 +75,14 @@ Auto-start the kiosk on boot — add to `~/.config/lxsession/LXDE-pi/autostart`
 @xset s noblank
 @unclutter -idle 0
 @chromium-browser --kiosk --noerrdialogs --disable-infobars --incognito \
-  "file:///home/pi/payband/index.html?bridge=http://PC-IP:8088/usage"
+  "file:///home/pi/clawidth/index.html?bridge=http://PC-IP:8088/usage"
 ```
 
 Reboot. The Pi boots straight into the fullscreen HUD.
 
 - Screen blanking is disabled so it stays on 24/7.
 - If `file://` fetches get blocked, serve the page instead:
-  `python3 -m http.server 8090 --directory ~/payband` and point Chromium at
+  `python3 -m http.server 8090 --directory ~/clawidth` and point Chromium at
   `http://localhost:8090/index.html?bridge=http://PC-IP:8088/usage`.
 - Rotate the display if mounting in portrait: add `display_rotate=1` to
   `/boot/config.txt` (or `video=...` on newer OSes).

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-payband-bridge - serve your Claude Code usage as a tiny JSON feed for the Payband watch.
+clawidth-bridge - serve your Claude Code usage as a tiny JSON feed for the Clawidth watch.
 
 It reads the LOCAL Claude Code logs on whatever machine you run it on and exposes a
 small JSON document on your LAN that the watch (or anything else) can poll.
@@ -15,9 +15,9 @@ Cheap cache-READ tokens are reported separately as `cache_read_today` and are ex
 from the headline by default (use --include-cache-read to fold them in).
 
 Usage:
-    python payband_bridge.py              # serve on http://0.0.0.0:8088/usage
-    python payband_bridge.py --once       # print the JSON once and exit (great for testing)
-    python payband_bridge.py --token-limit 20000000   # enable window_pct vs your own budget
+    python clawidth_bridge.py              # serve on http://0.0.0.0:8088/usage
+    python clawidth_bridge.py --once       # print the JSON once and exit (great for testing)
+    python clawidth_bridge.py --token-limit 20000000   # enable window_pct vs your own budget
 
 See bridge/README.md for the full picture.
 """
@@ -211,10 +211,10 @@ class _Cache:
         return self.value
 
 
-INDEX_HTML = """<!doctype html><meta charset=utf-8><title>payband-bridge</title>
+INDEX_HTML = """<!doctype html><meta charset=utf-8><title>clawidth-bridge</title>
 <style>body{font:14px ui-monospace,monospace;background:#0a0c10;color:#e8eaed;padding:24px}
 pre{background:#13161c;padding:16px;border-radius:10px;border:1px solid #262b34}</style>
-<h3>payband-bridge</h3><p>Live feed at <a style="color:#8ab4ff" href="/usage">/usage</a></p>
+<h3>clawidth-bridge</h3><p>Live feed at <a style="color:#8ab4ff" href="/usage">/usage</a></p>
 <pre id=o>loading...</pre>
 <script>async function t(){try{o.textContent=JSON.stringify(await(await fetch('/usage')).json(),null,2)}catch(e){o.textContent=e}}t();setInterval(t,2000)</script>
 """
@@ -257,13 +257,13 @@ def make_handler(args, cache):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(
-        description="Serve Claude Code usage as JSON for the Payband watch."
+        description="Serve Claude Code usage as JSON for the Clawidth watch."
     )
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8088)
     ap.add_argument("--window-hours", type=float, default=WINDOW_HOURS_DEFAULT)
     ap.add_argument("--token-limit", type=int,
-                    default=int(os.environ.get("PAYBAND_TOKEN_LIMIT", "0") or 0),
+                    default=int(os.environ.get("CLAWIDTH_TOKEN_LIMIT", "0") or 0),
                     help="Your own approx window token budget; enables window_pct (a local estimate).")
     ap.add_argument("--include-cache-read", action="store_true",
                     help="Fold cheap cache-read tokens into the headline count.")
@@ -283,7 +283,7 @@ def main(argv=None):
 
     cache = _Cache(args.cache_seconds)
     httpd = ThreadingHTTPServer((args.host, args.port), make_handler(args, cache))
-    print("payband-bridge serving on http://%s:%d/usage  (Ctrl-C to stop)" % (args.host, args.port))
+    print("clawidth-bridge serving on http://%s:%d/usage  (Ctrl-C to stop)" % (args.host, args.port))
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

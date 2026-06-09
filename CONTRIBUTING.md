@@ -1,12 +1,12 @@
-# Contributing to Payband
+# Contributing to Clawidth
 
-Thanks for being here! Payband is a small, friendly open-source hardware project,
+Thanks for being here! Clawidth is a small, friendly open-source hardware project,
 and contributions of every size are welcome — code, docs, a fix for a board
 variant I haven't tested, or just a good bug report.
 
 ## Ways to help
 
-- **Report a bug or a board quirk** — open an [issue](https://github.com/tristanbaldev/Payband/issues)
+- **Report a bug or a board quirk** — open an [issue](https://github.com/tristanbaldev/Clawidth/issues)
   and include your hardware (board, OLED, MicroPython version).
 - **Test on hardware** — different XIAO / ESP32-C3 batches, OLED addresses
   (`0x3C` vs `0x3D`), or battery setups. Real-world reports are gold.

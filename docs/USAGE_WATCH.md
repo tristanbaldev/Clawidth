@@ -1,6 +1,6 @@
 # Claude usage mode — the "spy watch"
 
-Payband can double as a discreet **Claude usage** readout: glance at your wrist to
+Clawidth can double as a discreet **Claude usage** readout: glance at your wrist to
 see your token burn instead of breaking flow to open **Settings → Usage**. This is
 fully opt-in, and there's nothing personal in the repo — you point it at *your own*
 Claude logs and *your own* network.
@@ -34,7 +34,7 @@ The watch never holds an API key and never calls Anthropic. A tiny bridge on you
 computer does the reading; the watch just polls it.
 
 ```
-Claude Code logs ──► payband-bridge (your PC)              ──LAN, plain HTTP──► ⌚ watch
+Claude Code logs ──► clawidth-bridge (your PC)              ──LAN, plain HTTP──► ⌚ watch
   ~/.claude/...       reads logs, aggregates tokens,                              polls /usage,
                       serves a tiny flat JSON                                     renders glance
                             │
@@ -81,7 +81,7 @@ Why a bridge instead of the watch calling Anthropic directly:
 
 1. **Run the bridge** on your computer (see [`../bridge/README.md`](../bridge/README.md)):
    ```bash
-   python bridge/payband_bridge.py
+   python bridge/clawidth_bridge.py
    # open http://localhost:8088/usage to see it working
    ```
 2. **Point the watch at it** in [`../src/config.py`](../src/config.py) (blank by default —
@@ -116,7 +116,7 @@ to you, on a secret gesture.
   self-reverting overlay pattern the wifi config card already uses (`Display.flash_config`).
 - **Worn palm-side**, the reveal faces only you.
 
-That makes Payband a three-mode discreet display: **Time / Earnings / Claude-usage**, on
+That makes Clawidth a three-mode discreet display: **Time / Earnings / Claude-usage**, on
 one hardware family.
 
 This rides the existing roadmap: the usage mode here is **v1** (software-only, on the

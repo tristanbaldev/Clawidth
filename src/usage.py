@@ -1,8 +1,8 @@
 """
-Payband - Claude usage client (OPTIONAL).
+Clawidth - Claude usage client (OPTIONAL).
 
 If config.WIFI_SSID + config.BRIDGE_URL are set, the watch joins your wifi (STA)
-and polls your payband-bridge (see the /bridge folder) for a tiny usage JSON, so
+and polls your clawidth-bridge (see the /bridge folder) for a tiny usage JSON, so
 the screen can show your Claude token burn at a glance.
 
 Nothing here is personal: the network and bridge address come from config.py,

@@ -1,5 +1,5 @@
 """
-Payband - central configuration.
+Clawidth - central configuration.
 
 Every tunable lives here so no other file hardcodes a pin, a wifi name, or a
 timing constant. Change things here, re-upload, done.
@@ -21,7 +21,7 @@ DEBOUNCE_MS = 30
 LONG_PRESS_MS = 1200        # hold this long -> show the wifi "config card"
 
 # --- Wi-Fi access point (this is the network your PHONE joins) ---
-AP_SSID = "Payband"
+AP_SSID = "Clawidth"
 AP_PASSWORD = "payday123"   # must be >= 8 chars. CHANGE THIS.
 AP_IP = "192.168.4.1"       # default SoftAP address, shown on the config card
 
@@ -36,7 +36,7 @@ STATE_FILE = "state.json"
 # --- Claude usage mode (OPTIONAL) ---
 # Leave WIFI_SSID empty to disable usage mode entirely. To turn it on, each
 # builder fills in THEIR OWN 2.4GHz network and the address of THEIR OWN
-# payband-bridge (see the /bridge folder). Nothing here ships with a real value,
+# clawidth-bridge (see the /bridge folder). Nothing here ships with a real value,
 # and the watch never holds an API key - only your bridge does.
 WIFI_SSID = ""              # your 2.4 GHz network name (ESP32-C3 is 2.4 GHz only)
 WIFI_PASSWORD = ""          # your network password

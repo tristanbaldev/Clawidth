@@ -1,12 +1,12 @@
 ---
 name: Feature request
-about: An idea to make Payband better
+about: An idea to make Clawidth better
 title: "[idea] "
 labels: enhancement
 ---
 
 **The idea**
-What would you like Payband to do?
+What would you like Clawidth to do?
 
 **Why**
 What problem does it solve, or what would it feel like to use?

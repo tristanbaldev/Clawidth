@@ -1,6 +1,6 @@
-# Payband
+# Clawidth
 
-[![CI](https://github.com/tristanbaldev/Payband/actions/workflows/ci.yml/badge.svg)](https://github.com/tristanbaldev/Payband/actions/workflows/ci.yml)
+[![CI](https://github.com/tristanbaldev/Clawidth/actions/workflows/ci.yml/badge.svg)](https://github.com/tristanbaldev/Clawidth/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-ESP32--C3-informational)
 ![Firmware](https://img.shields.io/badge/firmware-MicroPython-2b6cb0)
@@ -23,7 +23,7 @@ device's own wifi; after that it counts entirely on its own.
 
 ## How it works
 
-- The board runs its **own wifi network** (`Payband`). Join it from your phone,
+- The board runs its **own wifi network** (`Clawidth`). Join it from your phone,
   open `http://192.168.4.1`, and a one-page panel lets you set your rate, clock
   in/out, and pick the display mode.
 - **Earnings mode** counts locally on the chip — `rate × time_worked ÷ 3600`.
@@ -60,14 +60,14 @@ Full pinout and safety notes: [`docs/WIRING.md`](docs/WIRING.md).
    battery. See [`docs/WIRING.md`](docs/WIRING.md).
 2. **Flash it** — put MicroPython on the board, copy the `src/` files over. Full
    step-by-step (command line *and* Thonny GUI): [`docs/FLASHING.md`](docs/FLASHING.md).
-3. **First light** — the OLED shows `$0.00`; join the `Payband` wifi, set your
+3. **First light** — the OLED shows `$0.00`; join the `Clawidth` wifi, set your
    rate, clock in, watch it tick.
 
 ---
 
 ## Claude usage mode (optional)
 
-Payband can double as a discreet **Claude usage** readout — glance at your wrist
+Clawidth can double as a discreet **Claude usage** readout — glance at your wrist
 instead of opening Settings → Usage. It's fully opt-in, and **nothing personal is in
 the repo**: you point it at *your own* Claude logs and *your own* network.
 
@@ -75,7 +75,7 @@ the repo**: you point it at *your own* Claude logs and *your own* network.
    reads your local Claude Code logs and serves your token usage as JSON on your LAN.
    No API key, nothing leaves your machine.
    ```bash
-   python bridge/payband_bridge.py        # then open http://localhost:8088/usage
+   python bridge/clawidth_bridge.py        # then open http://localhost:8088/usage
    ```
 2. In `src/config.py`, set your wifi + the bridge address (blank by default — your
    values never get committed):
@@ -109,7 +109,7 @@ src/
   usage.py      optional Claude-usage client (joins wifi, polls the bridge)
   ssd1306.py    vendored MicroPython OLED driver (MIT)
 bridge/
-  payband_bridge.py   PC service: serves your local Claude usage as JSON (stdlib only)
+  clawidth_bridge.py   PC service: serves your local Claude usage as JSON (stdlib only)
 wall/
   index.html          fullscreen Claude-usage dashboard for a wall-mounted panel
 docs/
@@ -139,12 +139,12 @@ MicroPython or vendored here, so there's nothing to `pip install` onto the board
 
 ## Contributing
 
-Payband is open source and contributions are very welcome — code, docs, testing
+Clawidth is open source and contributions are very welcome — code, docs, testing
 on a board variant I haven't tried, or sharing an enclosure design.
 
-- 🐛 Found a bug or a board quirk? [Open an issue](https://github.com/tristanbaldev/Payband/issues).
+- 🐛 Found a bug or a board quirk? [Open an issue](https://github.com/tristanbaldev/Clawidth/issues).
 - 💡 Got an idea (overtime rules, a different screen, a slicker UI)? Start a
-  [discussion](https://github.com/tristanbaldev/Payband/discussions) or open a feature request.
+  [discussion](https://github.com/tristanbaldev/Clawidth/discussions) or open a feature request.
 - 🔧 Want to build on it? See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup and conventions.
 
 Please keep the firmware **dependency-free and MicroPython-compatible**, and put

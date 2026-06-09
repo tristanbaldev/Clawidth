@@ -1,5 +1,5 @@
 """
-Payband - entry point.
+Clawidth - entry point.
 
 Wires the OLED, the button, the persistent state, the optional Claude-usage
 client, and the wifi config server together and runs them concurrently with
@@ -12,7 +12,7 @@ except ImportError:
     import uasyncio as asyncio
 
 import config
-from state import Payband
+from state import Clawidth
 from display import Display
 from button import watch_button
 from usage import Usage, usage_loop
@@ -30,7 +30,7 @@ async def display_loop(disp, state, usage):
 
 
 async def main():
-    state = Payband.load()
+    state = Clawidth.load()
     disp = Display()
     usage = Usage()
 

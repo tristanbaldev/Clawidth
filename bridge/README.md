@@ -1,7 +1,7 @@
-# payband-bridge
+# clawidth-bridge
 
 A tiny PC service that reads your **local Claude Code logs** and serves your token
-usage as JSON on your LAN, so the [Payband](../README.md) watch (or anything else) can
+usage as JSON on your LAN, so the [Clawidth](../README.md) watch (or anything else) can
 show it at a glance.
 
 - **Stdlib only.** No `pip install`, no dependencies. Python 3.8+.
@@ -13,7 +13,7 @@ show it at a glance.
 ## Run it
 
 ```bash
-python payband_bridge.py
+python clawidth_bridge.py
 # -> serving on http://0.0.0.0:8088/usage
 ```
 
@@ -24,11 +24,11 @@ see it working. Then point the watch at `http://<your-PC-LAN-IP>:8088/usage` in
 ### Handy flags
 
 ```bash
-python payband_bridge.py --once               # print the JSON once and exit (testing)
-python payband_bridge.py --port 9000          # change the port
-python payband_bridge.py --token-limit 20000000   # enable window_pct vs your own budget
-python payband_bridge.py --include-cache-read     # fold cheap cache-reads into the headline
-python payband_bridge.py --window-hours 5     # size of the rolling usage window
+python clawidth_bridge.py --once               # print the JSON once and exit (testing)
+python clawidth_bridge.py --port 9000          # change the port
+python clawidth_bridge.py --token-limit 20000000   # enable window_pct vs your own budget
+python clawidth_bridge.py --include-cache-read     # fold cheap cache-reads into the headline
+python clawidth_bridge.py --window-hours 5     # size of the rolling usage window
 ```
 
 ## What it serves

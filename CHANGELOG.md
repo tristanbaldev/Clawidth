@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Payband are documented here. The format loosely follows
+All notable changes to Clawidth are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com).
 
 ## [Unreleased]
@@ -8,7 +8,7 @@ All notable changes to Payband are documented here. The format loosely follows
 ### Added
 - **Claude usage mode** — an optional second display mode that shows your Claude
   token burn (tokens this 5-hour window, time left, burn rate) at a glance.
-  - `bridge/payband_bridge.py`: a stdlib-only PC service that reads your local
+  - `bridge/clawidth_bridge.py`: a stdlib-only PC service that reads your local
     Claude Code logs and serves the usage as a tiny JSON feed on your LAN. Nothing
     personal is hardcoded; it auto-discovers whatever logs exist and holds no API key.
   - `src/usage.py`: the watch-side client (joins wifi, polls the bridge).
@@ -30,7 +30,7 @@ Initial firmware. Bench prototype.
 ### Added
 - MicroPython firmware for Seeed XIAO ESP32-C3 + 0.96" SSD1306 OLED.
 - Earnings state machine: tap to clock in, `earnings = rate × worked ÷ 3600`.
-- SoftAP `Payband` + single-page phone control panel (set rate, clock in/out, reset).
+- SoftAP `Clawidth` + single-page phone control panel (set rate, clock in/out, reset).
 - OLED money ticker with upscaled digits + wifi config card on long-press.
 - Async short/long button handling.
 - Wiring and flashing docs.

@@ -1,5 +1,5 @@
 """
-Payband - earnings state machine.
+Clawidth - earnings state machine.
 
 Deliberately hardware-free: this is pure logic, easy to reason about (and it
 even runs on desktop Python for testing).
@@ -36,7 +36,7 @@ def _now_ms():
     return time.ticks_ms()
 
 
-class Payband:
+class Clawidth:
     def __init__(self, rate=15.0, accumulated_s=0.0, running=False, mode="earnings"):
         self.rate = float(rate)
         self.accumulated_s = float(accumulated_s)

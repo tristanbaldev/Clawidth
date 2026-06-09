@@ -1,5 +1,5 @@
 """
-Payband - OLED rendering.
+Clawidth - OLED rendering.
 
 Three screens:
   * the money ticker (earnings mode, default)

@@ -1,5 +1,5 @@
 """
-Payband - async button watcher.
+Clawidth - async button watcher.
 
 Active-low button on config.PIN_BUTTON (other leg to GND, internal pull-up).
 

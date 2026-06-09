@@ -1,7 +1,7 @@
 """
-Payband - SoftAP + tiny HTTP config server.
+Clawidth - SoftAP + tiny HTTP config server.
 
-Your phone joins the "Payband" wifi network, opens http://192.168.4.1, and gets
+Your phone joins the "Clawidth" wifi network, opens http://192.168.4.1, and gets
 a one-page control panel: set the hourly rate, clock in/out, switch the display
 mode. No internet, no app, no cloud.
 
@@ -45,7 +45,7 @@ def start_ap():
 PAGE = """<!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Payband</title>
+<title>Clawidth</title>
 <style>
 :root{color-scheme:dark}
 *{box-sizing:border-box;font-family:ui-monospace,Menlo,Consolas,monospace}
@@ -68,7 +68,7 @@ button:active{transform:translateY(1px)}
 .on .dot{background:#37d67a}
 .muted{color:#5a5f67;font-size:11px;margin-top:26px;text-align:center;letter-spacing:.15em}
 </style></head><body><div class="card">
-<h1>PAYBAND</h1>
+<h1>CLAWIDTH</h1>
 <div class="amt" id="amt">$0.00</div>
 <div class="sub" id="sub"><span class="dot"></span><span id="st">--</span></div>
 <label>HOURLY RATE</label>
@@ -86,7 +86,7 @@ button:active{transform:translateY(1px)}
  <button id="mEarn" onclick="setMode('earnings')">EARNINGS</button>
  <button id="mClaude" onclick="setMode('usage')">CLAUDE</button>
 </div>
-<div class="muted">CONNECTED TO PAYBAND</div>
+<div class="muted">CONNECTED TO CLAWIDTH</div>
 </div><script>
 let editing=false;
 const r=document.getElementById('rate');

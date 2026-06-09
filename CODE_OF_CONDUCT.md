@@ -2,7 +2,7 @@
 
 ## Our pledge
 
-Payband is a welcoming project. Everyone is welcome to contribute regardless of
+Clawidth is a welcoming project. Everyone is welcome to contribute regardless of
 experience level, background, or identity. We're here to build something fun and
 to help each other do it.
 

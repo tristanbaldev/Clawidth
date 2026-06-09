@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Payband · Claude Usage Wall</title>
+<title>Clawidth · Claude Usage Wall</title>
 <style>
   /*
-   * Payband wall dashboard - a fullscreen Claude-usage HUD for a wall-mounted
+   * Clawidth wall dashboard - a fullscreen Claude-usage HUD for a wall-mounted
    * panel (e.g. a 15.6" IPS screen driven by a Raspberry Pi in kiosk mode).
-   * It is just a web page: it polls your payband-bridge for the usage JSON.
+   * It is just a web page: it polls your clawidth-bridge for the usage JSON.
    * Nothing personal is baked in - pass your bridge address with ?bridge=...
    *   index.html?bridge=http://192.168.1.50:8088/usage
    */
@@ -63,7 +63,7 @@
 <body>
 <div class="frame">
   <header>
-    <div class="brand">PAYBAND · CLAUDE USAGE</div>
+    <div class="brand">CLAWIDTH · CLAUDE USAGE</div>
     <div class="status"><span id="dot" class="dot"></span><span id="stxt">CONNECTING</span><span id="clock"></span></div>
   </header>
 
